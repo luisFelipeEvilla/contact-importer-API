@@ -91,7 +91,7 @@ const createContact = async (contact) => {
     }
 }
 
-const createContacts = (contacts) => {
+const createContacts = (contacts, acum) => {
     const results = contacts.map(contact => (
         createContact(contact)
     ))
@@ -100,12 +100,16 @@ const createContacts = (contacts) => {
 }
 
 const getContactByEmail = async (email, user_id) => {
-    const query = 'SELECT * FROM contacts WHERE email = $1 and user_id = $2';
-    const params = [email, user_id];
-
-    const found = await pool.query(query, params);
+    try {
+        const query = 'SELECT * FROM contacts WHERE email = $1 and user_id = $2';
+        const params = [email, user_id];
     
-    return found.rows[0];
+        const found = await pool.query(query, params);
+        
+        return found.rows[0];
+    } catch (error) {
+        throw new Error(`Error fetching contact by email and user_id ${error}`)
+    }
 }
 
 const validateContact = async (contact) => {

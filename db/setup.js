@@ -8,13 +8,34 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
      );`).then(() => {
     console.log("Users table successfully created");
 }).catch((err) => {
-    console.log(`Error creando la tabla de usuarios \n${err}`);
+    console.error(`Error, users table creation \n${err}`);
+    process.exit(1);
+})
+
+pool.query(`CREATE TYPE file_status AS ENUM ('On Hold', 'Processing', 'Failed', 'Finished');`)
+    .then(() => {
+        console.log('Enum files list status created');
+    }).catch(err => {
+        console.error(`Error, file_status creation error ${err}`)
+    })
+
+
+pool.query(`CREATE TABLE IF NOT EXISTS files (
+    file_id SERIAL PRIMARY KEY,
+    user_id SERIAL REFERENCES users(user_id),
+    name VARCHAR NOT NULL,
+    createdAt timestamp NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
+    status file_status NOT NULL
+ );`).then(() => {
+    console.log("files table succesfully created");
+}).catch((err) => {
+    console.error(`Error, files tables creation error \n${err}`);
     process.exit(1);
 })
 
 pool.query(`CREATE TABLE IF NOT EXISTS contacts (
-    contact_id serial PRIMARY KEY,
-    user_id serial REFERENCES users(user_id),
+    contact_id SERIAL PRIMARY KEY,
+    user_id SERIAL REFERENCES users(user_id),
     name VARCHAR ( 80 ) NOT NULL,
     birth_date DATE NOT NULL,
     phone VARCHAR(23) NOT NULL,
@@ -25,7 +46,7 @@ pool.query(`CREATE TABLE IF NOT EXISTS contacts (
  );`).then(() => {
     console.log("Contacts table succesfully created");
 }).catch((err) => {
-    console.log(`Error creando la tabla de usuarios \n${err}`);
+    console.error(`Error, contacts table creation \n${err}`);
     process.exit(1);
 })
 
@@ -41,6 +62,6 @@ pool.query(`CREATE TABLE IF NOT EXISTS file_structure (
     console.log("file_structure table succesfully created");
     process.exit()
 }).catch((err) => {
-    console.log(`Error creando la tabla de file_structure \n${err}`);
+    console.error(`Error, file_structure table creation \n${err}`);
     process.exit(1);
 })

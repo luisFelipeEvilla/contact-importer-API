@@ -9,40 +9,19 @@ const createUser = async (user) => {
 
         return result.rows[0];
     } catch (error) {
-        console.error(`Error, user creation \n${error}`);
-
-        return false;
+        throw new Error(`Error, user creation \n${error}`)
     }
-}
-
-const createUsers = (users) => {
-    const results = [];
-
-    users.forEach(async (user) => {
-        const result = new Promise((resolve, reject) => {
-            createUser(user.eventId, user.username, user.password).
-                then((created) => {
-                    resolve({ id: user.eventId, created })
-                })
-        });
-
-        results.push(result)
-    })
-
-    return results;
 }
 
 const getUsers = async () => {
     const query = 'SELECT * FROM users';
 
     try {
-        const result = await pool.query(query, params)
+        const result = await pool.query(query)
 
         return result;
     } catch (error) {
-        console.error(`Error getting users \n ${error}`);
-
-        return false;
+        throw new Error(`Error getting users \n ${error}`)
     }
 }
 const getUser = async (user) => {
@@ -54,9 +33,7 @@ const getUser = async (user) => {
 
         return result.rows[0];
     } catch (error) {
-        console.error(`Error getting user \n ${error}`);
-
-        return false;
+        throw new Error(`Error getting user \n ${error}`)
     }
 }
 
@@ -68,15 +45,12 @@ const deleteUsers = async () => {
 
         return true
     } catch (error) {
-        console.error(`Error deleting users \n${error}`);
-
-        return false;
+        throw new Error(`Error deleting users \n${error}`)
     }
 }
 
 module.exports = {
     getUser,
     createUser,
-    createUsers,
     deleteUsers
 }

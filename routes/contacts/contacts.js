@@ -5,6 +5,7 @@ const { createFileStructure,
     getFileStructure, 
     createContacts,
     getContacts } = require('../../db/contacts');
+const {createFile, updateFileStatus} = require('../../db/file');
 
 const Router = express.Router();
 
@@ -39,6 +40,10 @@ Router.post('/', async (req, res) => {
 
         const jsonContacts = await csv().fromFile(contacts.tempFilePath);
 
+        const file = { name: contacts.name, user_id: req.user.user_id }
+
+        const fileSaved = await createFile(file);
+
         const contactsToSave = jsonContacts.map((contact) => (
             {
                 user_id: req.user.user_id,
@@ -54,7 +59,17 @@ Router.post('/', async (req, res) => {
 
         const results = await createContacts(contactsToSave)
 
-        Promise.all(results).then(results => {
+        Promise.all(results).then(async results => {
+            let success = 0;
+            results.forEach(result => result.created === true ? success ++ : 0);
+
+            if ( success === 0 & jsonContacts.length > 0) {
+                fileSaved.status = 'Failed'
+            } else {
+                fileSaved.status = 'Finished'
+            }
+
+            await updateFileStatus(fileSaved)
             res.send(results);
         }).catch(error => {
             res.send(error)
