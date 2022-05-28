@@ -21,7 +21,7 @@ const createFileStructure = async (fileStructure) => {
 
         return true;
     } catch (error) {
-        console.error(`Error, user creation \n${error}`);
+        console.error(`Error, file_structure creation \n${error}`);
 
         return false;
     }
@@ -94,9 +94,9 @@ const getContactByEmail = async (email, user_id) => {
     const query = 'SELECT * FROM contacts WHERE email = $1 and user_id = $2';
     const params = [email, user_id];
 
-    const found = await pool.query(query, params).rows;
-
-    return found;
+    const found = await pool.query(query, params);
+    
+    return found.rows[0];
 }
 
 const validateContact = async (contact) => {
@@ -120,7 +120,7 @@ const validateContact = async (contact) => {
     if (!contact.address.trim()) validAddress = false;
 
     if (!validator.isEmail(contact.email)) validEmail = false;
-    const contactFound = getContactByEmail(contact.email, contact.user_id);
+    const contactFound = await getContactByEmail(contact.email, contact.user_id);
     if (contactFound) validEmail = false;
 
     if (!validator.isCreditCard(contact.credit_card)) validCreditCard = false;

@@ -8,6 +8,8 @@ const Router = express.Router();
 Router.post('/config', async (req, res) => {
     const { ...config } = req.body;
 
+    config.user_id = req.user.user_id;
+    
     const result = await createFileStructure(config);
 
     res.send(result)
@@ -21,13 +23,13 @@ Router.post('/', async (req, res) => {
     } else {
         const { contacts } = req.files;
 
-        const file_structure = await getFileStructure(1);
+        const file_structure = await getFileStructure(req.user.user_id);
 
         const jsonContacts = await csv().fromFile(contacts.tempFilePath);
 
         const contactsToSave = jsonContacts.map((contact) => (
             {
-                user_id: 1,
+                user_id: req.user.user_id,
                 name: contact[file_structure.name_column],
                 birth_date: contact[file_structure.birth_date_column],
                 phone: contact[file_structure.phone_column],

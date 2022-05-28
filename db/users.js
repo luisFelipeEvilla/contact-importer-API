@@ -1,14 +1,13 @@
 const pool = require('./index');
 
 const createUser = async (user) => {
-    const query = 'INSERT INTO users(username, password) VALUES($1, $2)';
+    const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING user_id, username' ;
     const params = [user.username, user.password];
 
     try {
         const result = await pool.query(query, params)
-        console.log("user created succesfully");
 
-        return true
+        return result.rows[0];
     } catch (error) {
         console.error(`Error, user creation \n${error}`);
 
