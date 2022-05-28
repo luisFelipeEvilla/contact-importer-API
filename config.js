@@ -8,6 +8,9 @@ const DB_CONFIG = {
     port: process.env.DB_PORT || 5432,
 }
 
+const jwtSecret = process.env.jwt_secret || 'secret'
+
 module.exports = {
-    DB_CONFIG
+    DB_CONFIG,
+    jwtSecret
 }
