@@ -1,15 +1,27 @@
 const express = require('express');
 const csv = require('csvtojson');
 const creditCardType = require("credit-card-type");
-const { createFileStructure, getFileStructure, createContacts } = require('../../db/contacts');
+const { createFileStructure, 
+    getFileStructure, 
+    createContacts,
+    getContacts } = require('../../db/contacts');
 
 const Router = express.Router();
+
+Router.get('/', async (req, res) => {
+    const { user_id } = req.user;
+    const { offset, limit } = req.query;
+
+    const contacts = await getContacts(user_id, offset, limit);
+
+    res.send(contacts);
+})
 
 Router.post('/config', async (req, res) => {
     const { ...config } = req.body;
 
     config.user_id = req.user.user_id;
-    
+
     const result = await createFileStructure(config);
 
     res.send(result)
@@ -39,7 +51,7 @@ Router.post('/', async (req, res) => {
                 email: contact[file_structure.email_column]
             }
         ))
-        
+
         const results = await createContacts(contactsToSave)
 
         Promise.all(results).then(results => {

@@ -1,6 +1,15 @@
 const pool = require('./index');
 const validator = require('validator').default;
 
+const getContacts = async (user_id, offset, limit) => {
+    const query = `SELECT * FROM contacts where user_id = $1 LIMIT $2 OFFSET $3`;
+    const params = [user_id, limit, offset];
+
+    const contacts = await pool.query(query, params);
+
+    return contacts.rows;
+}
+
 const createFileStructure = async (fileStructure) => {
     const found = await getFileStructure(fileStructure.user_id);
 
@@ -141,5 +150,6 @@ module.exports = {
     getFileStructure,
     createContact,
     createContacts,
-    getContactByEmail
+    getContactByEmail,
+    getContacts
 }
