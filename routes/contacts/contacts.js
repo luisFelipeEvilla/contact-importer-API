@@ -37,7 +37,7 @@ Router.post('/', async (req, res) => {
                 email: contact[file_structure.email_column]
             }
         ))
-
+        
         const results = await createContacts(contactsToSave)
 
         Promise.all(results).then(results => {
