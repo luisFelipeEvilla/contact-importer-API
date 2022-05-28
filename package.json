@@ -1,0 +1,39 @@
+{
+  "name": "contact-importer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon index.js",
+    "test": "jest"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luisFelipeEvilla/contact-importer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luisFelipeEvilla/contact-importer/issues"
+  },
+  "homepage": "https://github.com/luisFelipeEvilla/contact-importer#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "chalk": "^5.0.1",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}
