@@ -1,7 +1,6 @@
 const pool = require('./index');
 
 const createUser = async (user) => {
-    console.log(user);
     const query = 'INSERT INTO users(username, password) VALUES($1, $2)';
     const params = [user.username, user.password];
 
