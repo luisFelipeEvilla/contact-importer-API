@@ -2,6 +2,7 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const users = require('./routes/users/users');
 const contacts = require('./routes/contacts/contacts');
+const files = require('./routes/files/files');
 const auth = require('./middlewares/auth');
 
 const PORT = 3000;
@@ -16,6 +17,7 @@ app.use(fileUpload({
 }));
 
 app.use('/', users);
+app.use('/files', auth, files)
 app.use('/contacts', auth, contacts)
 
 app.listen(PORT, () => {
