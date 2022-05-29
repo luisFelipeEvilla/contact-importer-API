@@ -34,10 +34,10 @@ Router.post('/signup', async (req, res) => {
         
             res.status(201).json(result)
         } else {
-            res.status(401).json('Error creating user')
+            res.status(500).json('Error creating user')
         }
     } else {
-        res.status(401).json('You need to pass a username and password')
+        res.status(400).json('You need to pass a username and password')
     }
 })
 
@@ -72,7 +72,7 @@ Router.post('/signin', async (req, res) => {
             res.status(404).json(`User doesn't exists`);
         }
     } else {
-        res.status(401).json('you need to pass a username and password')
+        res.status(400).json('you need to pass a username and password')
     }
 })
 

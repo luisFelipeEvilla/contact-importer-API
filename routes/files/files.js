@@ -5,10 +5,14 @@ const Router = express.Router();
 
 Router.get('/', async (req, res) => {
     const { user_id } = req.user;
+    const { limit, offset } = req.params;
+    try {
+        const files = await getFiles(user_id, limit, offset);
 
-    const files = await getFiles(user_id);
-
-    res.send(files);
+        res.send(files);        
+    } catch (error) {
+        res.status(500).json({error: 'Server error'})
+    }    
 })
 
 module.exports = Router;

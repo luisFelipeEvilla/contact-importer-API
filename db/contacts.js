@@ -1,15 +1,31 @@
 const pool = require('./index');
 const validator = require('validator').default;
 
+/**
+ * @param {int} user_id 
+ * @param {int} offset 
+ * @param {int} limit 
+ * @returns {[contacts]} return contacts list asociate to the user_id
+ */
 const getContacts = async (user_id, offset, limit) => {
     const query = `SELECT * FROM contacts where user_id = $1 LIMIT $2 OFFSET $3`;
     const params = [user_id, limit, offset];
 
-    const contacts = await pool.query(query, params);
+    try {
+        const contacts = await pool.query(query, params);
 
-    return contacts.rows;
+        return contacts.rows;
+    } catch (error) {
+        throw new Error(`Error fetching users from data base ${error}`)
+    }
 }
 
+/**
+ * Save csv contacts file columns format. if user have right now a configuration file,
+ * will update this
+ * @param {user_id: int} fileStructure 
+ * @returns true if successfull
+ */
 const createFileStructure = async (fileStructure) => {
     const found = await getFileStructure(fileStructure.user_id);
 
@@ -30,17 +46,20 @@ const createFileStructure = async (fileStructure) => {
 
         return true;
     } catch (error) {
-        console.error(`Error, file_structure creation \n${error}`);
-
-        return false;
+        throw new Error(`Error, file_structure creation \n${error}`);
     }
 }
 
+/**
+ * get User file colums settings
+ * @param {int} userId 
+ * @returns {{databse_column_name: file_column_name}}
+ */
 const getFileStructure = async (userId) => {
-    try {
-        const query = 'SELECT * FROM file_structure WHERE user_id = $1'
-        const params = [userId]
+    const query = 'SELECT * FROM file_structure WHERE user_id = $1'
+    const params = [userId]
 
+    try {
         const file_structure = await pool.query(query, params);
 
         return file_structure.rows[0];
@@ -49,12 +68,13 @@ const getFileStructure = async (userId) => {
     }
 }
 
-
+/**
+ * create a new contact 
+ * @param {{user_id, name, birth_date, phone, address, credit_card, credit_card_network, email }} contact 
+ * @returns {{contact, created: true | false, error: true | null }} returns operations results
+ */
 const createContact = async (contact) => {
     try {
-
-        const valid = await validateContact(contact);
-
         const validations = await validateContact(contact);
 
         const isValid = Object.values(validations).every(validation => validation == true);
@@ -63,7 +83,7 @@ const createContact = async (contact) => {
             const query = `INSERT INTO contacts(user_id, name, birth_date, phone, 
                 address, credit_card, credit_card_network, email) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
             const params = [contact.user_id, contact.name, contact.birth_date, contact.phone,
-                'llls', contact.credit_card, contact.credit_card_network, contact.email]
+                contact.address , contact.credit_card, contact.credit_card_network, contact.email]
 
             const result = await pool.query(query, params);
 
@@ -81,7 +101,7 @@ const createContact = async (contact) => {
             }
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return {
             contact,
             created: false,
@@ -100,12 +120,12 @@ const createContacts = (contacts, acum) => {
 }
 
 const getContactByEmail = async (email, user_id) => {
-    try {
-        const query = 'SELECT * FROM contacts WHERE email = $1 and user_id = $2';
-        const params = [email, user_id];
+    const query = 'SELECT * FROM contacts WHERE email = $1 and user_id = $2';
+    const params = [email, user_id];
     
+    try {
         const found = await pool.query(query, params);
-        
+
         return found.rows[0];
     } catch (error) {
         throw new Error(`Error fetching contact by email and user_id ${error}`)

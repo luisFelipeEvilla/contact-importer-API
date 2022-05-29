@@ -5,7 +5,7 @@ const { createFileStructure,
     getFileStructure, 
     createContacts,
     getContacts } = require('../../db/contacts');
-const {createFile, updateFileStatus} = require('../../db/file');
+const { createFile, updateFileStatus } = require('../../db/file');
 
 const Router = express.Router();
 
@@ -19,19 +19,23 @@ Router.get('/', async (req, res) => {
 })
 
 Router.post('/config', async (req, res) => {
-    const { ...config } = req.body;
-
-    config.user_id = req.user.user_id;
-
-    const result = await createFileStructure(config);
-
-    res.send(result)
+    if (!req.is('application/json')) {
+        res.status(400).json({error: 'Error, the content-type header should be application/json'})
+    } else {
+        const { ...config } = req.body;
+    
+        config.user_id = req.user.user_id;
+    
+        const result = await createFileStructure(config);
+    
+        res.send(result)
+    }
 })
 
 Router.post('/', async (req, res) => {
     if (!req.is('multipart/form-data')) {
         res.status(400).json({
-            message: 'Eror, the content-type header should be multipart/form-data'
+            message: 'Error, the content-type header should be multipart/form-data'
         })
     } else {
         const { contacts } = req.files;
@@ -72,7 +76,7 @@ Router.post('/', async (req, res) => {
             await updateFileStatus(fileSaved)
             res.send(results);
         }).catch(error => {
-            res.send(error)
+            res.status(500).json({error: 'internal server error'})
         })
     }
 })
