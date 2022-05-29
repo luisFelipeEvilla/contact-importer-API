@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DATABASE=docker
+    ports:
+      - '5432:5432'
+  app:
+    depends_on:
+      - db
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=pass
+      - DB_NAME=docker
+      - DB_PORT=5432
+      - DB_HOST=db
+    tty: true
