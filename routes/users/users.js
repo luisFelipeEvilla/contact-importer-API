@@ -15,26 +15,30 @@ Router.post('/signup', async (req, res) => {
             password
         }
 
-        const salt = await bcrypt.genSalt(10);
+        try {
+            const salt = await bcrypt.genSalt(10);
 
-        user.password = await bcrypt.hash(password, salt);
+            user.password = await bcrypt.hash(password, salt);
 
-        const result = await createUser(user)
+            const result = await createUser(user)
 
-        if (result) {
-            const token = jwt.sign(
-                { user_id: result.user_id, username: result.username },
-                jwtSecret,
-                {
-                    expiresIn: '3d'
-                }
-            )
+            if (result) {
+                const token = jwt.sign(
+                    { user_id: result.user_id, username: result.username },
+                    jwtSecret,
+                    {
+                        expiresIn: '3d'
+                    }
+                )
 
-            result.token = token;
-        
-            res.status(201).json(result)
-        } else {
-            res.status(500).json('Error creating user')
+                result.token = token;
+
+                res.status(201).json(result)
+            } else {
+                res.status(500).json('Error creating user')
+            }
+        } catch (error) {
+            res.status(500).json({error: 'Internal Server Error'})
         }
     } else {
         res.status(400).json('You need to pass a username and password')
