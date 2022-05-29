@@ -1,5 +1,10 @@
 const pool = require('./index');
 
+/**
+ * create a user in the database
+ * @param {{username: String, password: String}} user 
+ * @returns {{user_id: int, username: String}} returns used saved
+ */
 const createUser = async (user) => {
     const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING user_id, username' ;
     const params = [user.username, user.password];
@@ -13,17 +18,10 @@ const createUser = async (user) => {
     }
 }
 
-const getUsers = async () => {
-    const query = 'SELECT * FROM users';
-
-    try {
-        const result = await pool.query(query)
-
-        return result;
-    } catch (error) {
-        throw new Error(`Error getting users \n ${error}`)
-    }
-}
+/** 
+ * @param {String} user 
+ * @returns {{user_id: int, username: String, password: String} | null} returns user found
+ */
 const getUser = async (user) => {
     const query = 'SELECT * FROM users WHERE username = $1';
     const params = [user.username];
@@ -37,20 +35,7 @@ const getUser = async (user) => {
     }
 }
 
-const deleteUsers = async () => {
-    const query = 'DELETE FROM users';
-
-    try {
-        const result = await pool.query(query)
-
-        return true
-    } catch (error) {
-        throw new Error(`Error deleting users \n${error}`)
-    }
-}
-
 module.exports = {
     getUser,
-    createUser,
-    deleteUsers
+    createUser
 }

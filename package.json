@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node swagger.js",
     "start:dev": "nodemon index.js",
-    "test": "jest"
+    "test": "cross-env NODE_ENV=test jest"
   },
   "repository": {
     "type": "git",
@@ -28,12 +29,15 @@
     "express-fileupload": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
+    "swagger-ui-express": "^4.4.0",
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "jest": "^28.1.0",
     "nodemon": "^2.0.16",
-    "supertest": "^6.2.3"
+    "supertest": "^6.2.3",
+    "swagger-autogen": "^2.21.2"
   },
   "jest": {
     "testEnvironment": "node",

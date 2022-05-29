@@ -1,5 +1,12 @@
 const pool = require('./index');
 
+/**
+ * get users contact csv files information 
+ * @param {int} user_id 
+ * @param {int} limit 
+ * @param {int} offset 
+ * @returns {[files]} returns an files array
+ */
 const getFiles = async (user_id, limit, offset) => {
     try {
         const query = `SELECT * FROM files WHERE user_id = $1 LIMIT $2 OFFSET $3`;
@@ -13,6 +20,11 @@ const getFiles = async (user_id, limit, offset) => {
     }
 }
 
+/**
+ * Create a file
+ * @param {{user_id, name}} file 
+ * @returns {{file_id, user_id, name, createdAt, status}} file saved 
+ */
 const createFile = async (file) => {
     try {
         const query = `INSERT INTO files (user_id, name, status) VALUES($1, $2, $3) RETURNING *`
