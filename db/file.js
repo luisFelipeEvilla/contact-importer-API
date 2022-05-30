@@ -7,6 +7,26 @@ const pool = require('./index');
  * @param {int} offset 
  * @returns {[files]} returns an files array
  */
+ const getFilesCount = async (user_id, limit, offset) => {
+    try {
+        const query = `SELECT COUNT(*) FROM files WHERE user_id = $1`;
+        const params = [user_id];
+    
+        const files = await pool.query(query,  params);
+    
+        return files.rows[0].count;
+    } catch (error) {
+        throw new Error(`Error fetching files ${error}`);
+    }
+}
+
+/**
+ * get users contact csv files information 
+ * @param {int} user_id 
+ * @param {int} limit 
+ * @param {int} offset 
+ * @returns {[files]} returns an files array
+ */
 const getFiles = async (user_id, limit, offset) => {
     try {
         const query = `SELECT * FROM files WHERE user_id = $1 LIMIT $2 OFFSET $3`;
@@ -58,5 +78,6 @@ const updateFileStatus = async (file) => {
 module.exports = {
     createFile,
     updateFileStatus,
-    getFiles
+    getFiles,
+    getFilesCount
 }
