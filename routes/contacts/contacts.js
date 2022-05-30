@@ -66,7 +66,7 @@ Router.post('/', async (req, res) => {
 
         const jsonContacts = await csv().fromFile(contacts.tempFilePath);
 
-        const file = { name: contacts.name, user_id: req.user.user_id }
+        const file = { name: contacts.name, createdAt: new Date(),user_id: req.user.user_id }
 
         const fileSaved = await createFile(file);
 

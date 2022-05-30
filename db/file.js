@@ -27,8 +27,8 @@ const getFiles = async (user_id, limit, offset) => {
  */
 const createFile = async (file) => {
     try {
-        const query = `INSERT INTO files (user_id, name, status) VALUES($1, $2, $3) RETURNING *`
-        const params = [file.user_id, file.name, 'Processing']
+        const query = `INSERT INTO files (user_id, createdAt, name, status) VALUES($1, $2, $3, $4) RETURNING *`
+        const params = [file.user_id, file.createdAt, file.name, 'Processing']
     
         const fileSaved = await pool.query(query, params)
     
