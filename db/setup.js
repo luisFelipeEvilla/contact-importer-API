@@ -42,7 +42,7 @@ async function setup() {
         birth_date DATE NOT NULL,
         phone VARCHAR(23) NOT NULL,
         address VARCHAR(100) NOT NULL,
-        credit_card VARCHAR(19) NOT NULL,
+        credit_card VARCHAR(200) NOT NULL,
         credit_card_network VARCHAR(80) NOT NULL,
         email VARCHAR(100) NOT NULL);`
     ).then(() => {

@@ -12,8 +12,11 @@ const jwtSecret = process.env.jwt_secret || 'secret';
 
 const SERVER_PORT = process.env.SERVER_PORT || 4000;
 
+const ENCRYPTION_PASSWORD = process.env.ENCRYPTION_PASSWORD  || 'FoCKvdLslUuB4y3EZlKate7XGottHski1LmyqJHvUhs';
+
 module.exports = {
     DB_CONFIG,
     jwtSecret,
-    SERVER_PORT
+    SERVER_PORT,
+    ENCRYPTION_PASSWORD
 }

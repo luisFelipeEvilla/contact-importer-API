@@ -6,6 +6,7 @@ const { createFileStructure,
     createContacts,
     getContacts, getContactsCount } = require('../../db/contacts');
 const { createFile, updateFileStatus } = require('../../db/file');
+const { decrypt } = require('../../utils/encryption');
 
 const Router = express.Router();
 
@@ -29,7 +30,13 @@ Router.get('/', async (req, res) => {
 
         const contacts = await getContacts(user_id, offset, limit);
 
-        res.send(contacts);
+        const contactsDecrypted =  contacts.map(contact => {
+            contact.credit_card = decrypt(contact.credit_card).slice(-5,-1);
+
+            return contact
+        })
+
+        res.send(contactsDecrypted);
     } catch (error) {
         res.status(500).json(error)
     }
