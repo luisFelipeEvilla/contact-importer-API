@@ -16,29 +16,31 @@ Router.post('/signup', async (req, res) => {
         }
 
         try {
+            const found = await getUser(user);
+            if (found) {
+                return res.status(400).json({ error: `user already exists` })
+            }
+
             const salt = await bcrypt.genSalt(10);
 
             user.password = await bcrypt.hash(password, salt);
 
             const result = await createUser(user)
 
-            if (result) {
-                const token = jwt.sign(
-                    { user_id: result.user_id, username: result.username },
-                    jwtSecret,
-                    {
-                        expiresIn: '3d'
-                    }
-                )
+            const token = jwt.sign(
+                { user_id: result.user_id, username: result.username },
+                jwtSecret,
+                {
+                    expiresIn: '3d'
+                }
+            )
 
-                result.token = token;
+            result.token = token;
 
-                res.status(201).json(result)
-            } else {
-                res.status(500).json('Error creating user')
-            }
+            res.status(201).json(result)
         } catch (error) {
-            res.status(500).json({error: 'Internal Server Error'})
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' })
         }
     } else {
         res.status(400).json('You need to pass a username and password')
@@ -54,29 +56,32 @@ Router.post('/signin', async (req, res) => {
             password
         }
 
-        const userDB = await getUser(user)
+        try {
+            const userDB = await getUser(user)
+            
+            if (userDB) {
+                const authenticate = bcrypt.compareSync(user.password, userDB.password);
 
-        if (userDB) {
-            const salt = await bcrypt.genSalt(10);
+                const token = jwt.sign(
+                    { user_id: userDB.user_id, username: userDB.username },
+                    jwtSecret,
+                    {
+                        expiresIn: '3d'
+                    }
+                )
 
-            const authenticate = bcrypt.compareSync(user.password, userDB.password);
-
-            const token = jwt.sign(
-                { user_id: userDB.user_id, username: userDB.username },
-                jwtSecret,
-                {
-                    expiresIn: '3d'
-                }
-            )
-
-            userDB.token = token
-
-            authenticate ? res.send(userDB) : res.status(401).json("Error, wrong password");
-        } else {
-            res.status(404).json(`User doesn't exists`);
+                userDB.token = token;
+                delete userDB.password;
+                
+                authenticate ? res.send(userDB) : res.status(400).json({error: "Error, wrong password"});
+            } else {
+                res.status(404).json(`User doesn't exists`);
+            }
+        } catch (error) {
+            res.status(500).json({error});
         }
     } else {
-        res.status(400).json('you need to pass a username and password')
+        res.status(400).json({error:'you need to pass a username and password'})
     }
 })
 

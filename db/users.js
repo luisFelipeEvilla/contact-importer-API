@@ -28,7 +28,7 @@ const getUser = async (user) => {
 
     try {
         const result = await pool.query(query, params)
-
+        
         return result.rows[0];
     } catch (error) {
         throw new Error(`Error getting user \n ${error}`)
