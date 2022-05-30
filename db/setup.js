@@ -26,7 +26,7 @@ async function setup() {
         file_id SERIAL PRIMARY KEY,
         user_id SERIAL REFERENCES users(user_id),
         name VARCHAR NOT NULL,
-        createdAt timestamp NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
+        createdAt timestamp NOT NULL DEFAULT now(),
         status file_status NOT NULL);`
     ).then(() => {
         console.log("files table succesfully created");

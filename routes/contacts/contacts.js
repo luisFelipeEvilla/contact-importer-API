@@ -4,31 +4,53 @@ const creditCardType = require("credit-card-type");
 const { createFileStructure, 
     getFileStructure, 
     createContacts,
-    getContacts } = require('../../db/contacts');
+    getContacts, getContactsCount } = require('../../db/contacts');
 const { createFile, updateFileStatus } = require('../../db/file');
 
 const Router = express.Router();
 
+Router.get('/count', async (req, res) => {
+    try {
+        const { user_id } = req.user;
+
+        const count = await getContactsCount(user_id);
+
+        res.send(count);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error)
+    }
+})
+
 Router.get('/', async (req, res) => {
-    const { user_id } = req.user;
-    const { offset, limit } = req.query;
-
-    const contacts = await getContacts(user_id, offset, limit);
-
-    res.send(contacts);
+    try {
+        const { user_id } = req.user;
+        const { offset, limit } = req.query;
+    
+        const contacts = await getContacts(user_id, offset, limit);
+    
+        res.send(contacts);
+    } catch (error) {
+        res.status(500).json(error)
+    }
 })
 
 Router.post('/config', async (req, res) => {
     if (!req.is('application/json')) {
         res.status(400).json({error: 'Error, the content-type header should be application/json'})
     } else {
-        const { ...config } = req.body;
+        try {
+            const { ...config } = req.body;
+        
+            config.user_id = req.user.user_id;
+        
+            const result = await createFileStructure(config);
+            
+            res.send(result)
+        } catch (error) {
+            res.status(500).send(error)
+        }
     
-        config.user_id = req.user.user_id;
-    
-        const result = await createFileStructure(config);
-    
-        res.send(result)
     }
 })
 
