@@ -1,12 +1,13 @@
 const express = require('express');
-const csv = require('csvtojson');
-const creditCardType = require("credit-card-type");
 const { createFileStructure,
     getFileStructure,
-    createContacts,
     getContacts, getContactsCount } = require('../../db/contacts');
-const { createFile, updateFileStatus } = require('../../db/file');
+const { createFile } = require('../../db/file');
 const { decrypt } = require('../../utils/encryption');
+const {copyFile} = require('fs');
+const { FILES_SAVED_PATH } = require('../../config');
+const path = require('path')
+const { v4: uuidv4 } = require('uuid');
 
 const Router = express.Router();
 
@@ -76,43 +77,20 @@ Router.post('/', async (req, res) => {
     }
 
     try {
-        const jsonContacts = await csv().fromFile(contacts.tempFilePath);
-
-        const file = { name: contacts.name, createdAt: new Date(), user_id: req.user.user_id }
-
-        const fileSaved = await createFile(file);
-
-        const contactsToSave = jsonContacts.map((contact) => (
-            {
-                user_id: req.user.user_id,
-                name: contact[file_structure.name_column],
-                birth_date: contact[file_structure.birth_date_column],
-                phone: contact[file_structure.phone_column],
-                address: contact[file_structure.address_column],
-                credit_card: contact[file_structure.credit_card_column],
-                credit_card_network: creditCardType(contact.credit_card)[0].niceType,
-                email: contact[file_structure.email_column]
+        const newFileName =  uuidv4() + '.csv'
+        copyFile(contacts.tempFilePath, path.join(FILES_SAVED_PATH, newFileName), async (error) => {
+            if (error) { 
+                return res.status(500).send({error: `Error saving csv file \n ${error}`})
             }
-        ))
+            const file = { name: contacts.name, saved_name: newFileName, createdAt: new Date(), user_id: req.user.user_id }
 
-        const results = await createContacts(contactsToSave)
-
-        Promise.all(results).then(async results => {
-            let success = 0;
-            results.forEach(result => result.created === true ? success++ : 0);
-
-            if (success === 0 & jsonContacts.length > 0) {
-                fileSaved.status = 'Failed'
-            } else {
-                fileSaved.status = 'Finished'
-            }
-
-            await updateFileStatus(fileSaved)
-            res.send(results);
-        }).catch(error => {
-            res.status(500).json({ error: 'internal server error' })
+            const fileSaved = await createFile(file); 
+    
+            res.status(200).json(fileSaved);
         })
+ 
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'internal server error' })
     }
 })
