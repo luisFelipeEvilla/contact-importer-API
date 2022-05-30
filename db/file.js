@@ -65,7 +65,7 @@ const updateFileStatus = async (file) => {
         const params = [file.status, file.file_id];
     
         const fileUpdated = await pool.query(query, params)
-    
+
         return {
             error: null,
             fileUpdated
