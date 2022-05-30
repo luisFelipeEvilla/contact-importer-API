@@ -1,6 +1,19 @@
 const pool = require('./index');
 const validator = require('validator').default;
 
+const getContactsCount = async (user_id) => {
+    const query = `SELECT COUNT(*) FROM contacts where user_id = $1`;
+    const params = [user_id];
+
+    try {
+        const contacts = await pool.query(query, params);
+
+        return contacts.rows[0].count;
+    } catch (error) {
+        throw new Error(`Error fetching users from data base ${error}`)
+    }
+}    
+
 /**
  * @param {int} user_id 
  * @param {int} offset 
@@ -175,5 +188,6 @@ module.exports = {
     createContact,
     createContacts,
     getContactByEmail,
-    getContacts
+    getContacts,
+    getContactsCount
 }
