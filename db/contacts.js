@@ -1,5 +1,6 @@
 const pool = require('./index');
 const validator = require('validator').default;
+const {encrypt} = require('../utils/encryption');
 
 const getContactsCount = async (user_id) => {
     const query = `SELECT COUNT(*) FROM contacts where user_id = $1`;
@@ -96,7 +97,7 @@ const createContact = async (contact) => {
             const query = `INSERT INTO contacts(user_id, name, birth_date, phone, 
                 address, credit_card, credit_card_network, email) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
             const params = [contact.user_id, contact.name, contact.birth_date, contact.phone,
-                contact.address , contact.credit_card, contact.credit_card_network, contact.email]
+                contact.address , encrypt(contact.credit_card), contact.credit_card_network, contact.email]
 
             const result = await pool.query(query, params);
 
