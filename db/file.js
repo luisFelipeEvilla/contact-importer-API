@@ -1,13 +1,11 @@
 const pool = require('./index');
 
 /**
- * get users contact csv files information 
+ * get users contact csv files information number 
  * @param {int} user_id 
- * @param {int} limit 
- * @param {int} offset 
  * @returns {[files]} returns an files array
  */
- const getFilesCount = async (user_id, limit, offset) => {
+ const getFilesCount = async (user_id) => {
     try {
         const query = `SELECT COUNT(*) FROM files WHERE user_id = $1`;
         const params = [user_id];
@@ -29,7 +27,7 @@ const pool = require('./index');
  */
 const getFiles = async (user_id, limit, offset) => {
     try {
-        const query = `SELECT * FROM files WHERE user_id = $1 LIMIT $2 OFFSET $3`;
+        const query = `SELECT * FROM files WHERE user_id = $1 ORDER BY createdAt DESC LIMIT $2 OFFSET $3`;
         const params = [user_id, limit, offset];
     
         const files = await pool.query(query,  params);
@@ -37,6 +35,57 @@ const getFiles = async (user_id, limit, offset) => {
         return files.rows;
     } catch (error) {
         throw new Error(`Error fetching files ${error}`);
+    }
+}
+
+/**
+ * get users contact csv files information 
+ * @param {int} file_id 
+ * @param {int} limit 
+ * @param {int} offset 
+ * @returns {[files]} returns an files array
+ */
+ const getFileCount = async (file_id, created) => {
+    try {
+        let query = `SELECT COUNT(*) FROM contacts WHERE file_id = $1`;
+        
+        if (!created) {
+            query = `SELECT COUNT(*) FROM contacts_fails WHERE file_id = $1`;
+        }  
+
+        const params = [file_id, state, limit, offset];
+    
+        const results = await pool.query(query,  params);
+    
+        return results.rows.count
+    } catch (error) {
+        throw new Error(`Error fetching file ${error}`);
+    }
+}
+
+/**
+ * get users contact csv files upload information 
+ * @param {int} file_id 
+ * @param {int} limit 
+ * @param {int} offset 
+ * @returns {[files]} returns an files array
+ */
+ const getFile = async (file_id, created, limit, offset) => {
+    try {
+        
+        let query = `SELECT * FROM contacts WHERE file_id = $1 LIMIT $2 OFFSET $3`;
+
+        if (!created) {
+            query = `SELECT * FROM contacts_fail WHERE file_id = $1 LIMIT $2 OFFSET $3`;
+        }
+
+        const params = [file_id, limit, offset];
+    
+        const results = await pool.query(query,  params);
+        
+        return results.rows
+    } catch (error) {
+        throw new Error(`Error fetching file ${error}`);
     }
 }
 
@@ -79,5 +128,7 @@ module.exports = {
     createFile,
     updateFileStatus,
     getFiles,
-    getFilesCount
+    getFilesCount,
+    getFile,
+    getFileCount
 }
