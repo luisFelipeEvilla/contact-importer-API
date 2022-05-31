@@ -50,14 +50,14 @@ const getFiles = async (user_id, limit, offset) => {
         let query = `SELECT COUNT(*) FROM contacts WHERE file_id = $1`;
         
         if (!created) {
-            query = `SELECT COUNT(*) FROM contacts_fails WHERE file_id = $1`;
+            query = `SELECT COUNT(*) FROM contacts_fail WHERE file_id = $1`;
         }  
 
-        const params = [file_id, state, limit, offset];
+        const params = [file_id];
     
         const results = await pool.query(query,  params);
-    
-        return results.rows.count
+        
+        return results.rows[0].count
     } catch (error) {
         throw new Error(`Error fetching file ${error}`);
     }
