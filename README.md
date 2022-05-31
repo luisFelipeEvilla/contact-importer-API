@@ -18,14 +18,12 @@ Copy the repository on your local machine:
 ### enviroment variables
 You can set enviroment variables for the project and  change the default settings. Here you have a example with the defaults values to deploy the API. Create a .env file in your project root and copy there.
 
-`
 DB_USER=docker // data base user
 DB_PASSWORD=PASS // data base passsword
 DB_PORT=5432 // data base port
 DB_NAME=docker // data base name
 SERVER_PORT=4000 // server listen port
 ENCRYPTION_PASSWORD=FoCKvdLslUuB4y3EZlKate7XGottHski1LmyqJHvUhs // credit card encryption password
-`
 
 ### Deployment
 You can easy deploy the complete application with docker compose. execute the following command on your project root directory
